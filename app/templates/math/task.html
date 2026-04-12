@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}TimTag — Задача{% endblock %}
+
+{% block navbar_right %}
+  <div class="flex items-center gap-2">
+    <span class="badge badge-purple">Ур. {{ child.level }}</span>
+    <span class="badge badge-yellow">⭐ {{ child.points }}</span>
+    {% if child.streak > 0 %}
+    <span class="badge" style="background:#fce7f3; color:#db2777;">🔥 {{ child.streak }}</span>
+    {% endif %}
+  </div>
+{% endblock %}
+
+{% block content %}
+
+{# ── Стрик-прогресс ── #}
+<div class="mb-5">
+  <div class="flex justify-between text-sm text-gray-400 font-semibold mb-1">
+    <span>{{ child.name }}</span>
+    <div class="flex items-center gap-3">
+      {# Счётчик ошибок — показываем только если есть #}
+      {% if child.wrong_streak > 0 %}
+      <span style="color:#ef4444;">❌ {{ child.wrong_streak }}/3</span>
+      {% endif %}
+      <span>🔥 {{ child.streak }}/8</span>
+    </div>
+  </div>
+  <div class="streak-bar-track">
+    <div class="streak-bar-fill" style="width: {{ (child.streak / 8 * 100)|int }}%"></div>
+  </div>
+</div>
+
+{# ── Блок задачи (HTMX заменяет этот div) ── #}
+<div id="task-block">
+
+  {# Карточка вопроса #}
+  <div class="card p-8 text-center mb-6 pop-in">
+    <div class="text-xs font-bold uppercase tracking-widest text-gray-300 mb-4">
+      {{ topic }}
+    </div>
+    <p class="text-2xl font-black text-gray-800 leading-snug">
+      {{ task.question }}
+    </p>
+
+  </div>
+
+  {# Форма с вариантами ответов #}
+  <form hx-post="/math/check"
+        hx-target="#task-block"
+        hx-swap="outerHTML">
+
+    <input type="hidden" name="correct"    value="{{ task.answer }}">
+    <input type="hidden" name="question"   value="{{ task.question }}">
+    <input type="hidden" name="topic"      value="{{ topic }}">
+    <input type="hidden" name="child_name" value="{{ child.name }}">
+
+    <p class="text-center text-sm font-bold text-gray-400 mb-4">Выбери ответ 👇</p>
+
+    <div class="flex flex-wrap gap-3 justify-center">
+      {% for n in range(0, max_answer + 1) %}
+      <button type="submit"
+              name="answer"
+              value="{{ n }}"
+              class="answer-btn">
+        {{ n }}
+      </button>
+      {% endfor %}
+    </div>
+
+  </form>
+
+</div>
+
+{% endblock %}

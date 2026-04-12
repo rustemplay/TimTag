@@ -1,0 +1,32 @@
+services:
+
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB:       timtag
+      POSTGRES_USER:     timtag_user
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U timtag_user -d timtag"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    image: rustam21/timtag:latest
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://timtag_user:${DB_PASSWORD}@db:5432/timtag
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:

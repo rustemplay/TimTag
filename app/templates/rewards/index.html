@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}TimTag — Награды{{ child.name }}{% endblock %}
+
+{% block navbar_right %}
+  <div class="flex items-center gap-2">
+    <span class="text-sm font-bold text-gray-500">Баланс:</span>
+    <span class="badge badge-yellow text-base">⭐ {{ child.points }}</span>
+  </div>
+{% endblock %}
+
+{% block content %}
+
+{# ── Шапка ── #}
+<div class="text-center mb-8">
+  <div class="text-5xl mb-3">🎁</div>
+  <h2 class="text-3xl font-black text-gray-800">Магазин наград</h2>
+  <p class="text-gray-400 font-semibold mt-1">{{ child.name }}, трать очки с умом!</p>
+
+  <div class="inline-flex items-center gap-2 mt-4 px-6 py-3 rounded-2xl font-black text-xl text-white"
+       style="background:linear-gradient(135deg,#6c63ff,#a78bfa);">
+    ⭐ {{ child.points }} очков
+  </div>
+</div>
+
+{# ── Сетка наград ── #}
+<div class="grid grid-cols-2 gap-4">
+  {% for r in rewards %}
+  <div class="reward-card pop-in
+              {% if child.points >= r.cost %}hover:shadow-lg{% else %}opacity-60{% endif %}">
+
+    <div class="text-5xl mb-3">{{ r.emoji }}</div>
+    <div class="font-black text-gray-800 text-lg mb-1">{{ r.name }}</div>
+    <div class="font-bold mb-4" style="color:#6c63ff;">⭐ {{ r.cost }}</div>
+
+    {% if child.points >= r.cost %}
+    <form action="/rewards/{{ child.id }}/request" method="post" class="w-full">
+      <input type="hidden" name="reward_name"  value="{{ r.name }}">
+      <input type="hidden" name="reward_emoji" value="{{ r.emoji }}">
+      <input type="hidden" name="points_cost"  value="{{ r.cost }}">
+      <button type="submit"
+              class="w-full py-2 rounded-xl font-bold text-white text-sm
+                     transition-all active:scale-95"
+              style="background:#6c63ff;">
+        Получить!
+      </button>
+    </form>
+    {% else %}
+    <div class="w-full py-2 rounded-xl font-bold text-sm text-center"
+         style="background:#f3f4f6; color:#9ca3af;">
+      Ещё {{ r.cost - child.points }} ⭐
+    </div>
+    {% endif %}
+
+  </div>
+  {% endfor %}
+</div>
+
+{% endblock %}

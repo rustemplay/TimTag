@@ -1,0 +1,152 @@
+/* ===== TimTag — кастомные стили поверх Tailwind ===== */
+
+/* Импорт шрифта — Nunito идеален для детей: округлый, читаемый */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
+
+/* CSS-переменные проекта */
+:root {
+  --color-primary:   #6c63ff;
+  --color-primary-light: #ede9ff;
+  --color-success:   #22c55e;
+  --color-danger:    #ef4444;
+  --color-warning:   #f59e0b;
+  --color-bg:        #f5f3ff;
+  --color-card:      #ffffff;
+  --radius-card:     1rem;
+  --shadow-card:     0 2px 16px 0 rgba(108,99,255,0.08);
+}
+
+/* Базовый шрифт */
+body {
+  font-family: 'Nunito', sans-serif;
+  background-color: var(--color-bg);
+}
+
+/* ===== Кнопки ===== */
+
+/* Основная кнопка */
+.btn-primary {
+  @apply inline-block w-full text-center py-3 px-6 rounded-2xl
+         text-white font-bold text-lg transition-all duration-150
+         active:scale-95 select-none;
+  background: var(--color-primary);
+  box-shadow: 0 4px 14px rgba(108,99,255,0.35);
+}
+.btn-primary:hover {
+  filter: brightness(1.08);
+}
+
+.btn-secondary {
+  @apply inline-block w-full text-center py-3 px-6 rounded-2xl
+         font-bold text-lg border-2 transition-all duration-150
+         active:scale-95 select-none bg-white;
+  border-color: #e5e7eb;
+  color: #374151;
+}
+.btn-secondary:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background: var(--color-primary-light);
+}
+
+/* ===== Карточки ===== */
+.card {
+  background: var(--color-card);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  border: 1.5px solid #ede9ff;
+}
+
+/* ===== Кнопки-ответы в задачах ===== */
+.answer-btn {
+  @apply flex items-center justify-center font-bold text-xl
+         rounded-2xl border-2 transition-all duration-100
+         active:scale-90 select-none cursor-pointer;
+  width: 56px;
+  height: 56px;
+  border-color: #e5e7eb;
+  background: #fff;
+  color: #374151;
+}
+.answer-btn:hover {
+  border-color: var(--color-primary);
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  transform: scale(1.08);
+}
+
+/* ===== Значок уровня / очков ===== */
+.badge {
+  @apply inline-flex items-center gap-1 px-3 py-1 rounded-full
+         text-sm font-bold;
+}
+.badge-purple {
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+}
+.badge-yellow {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+/* ===== Прогресс-бар стрика ===== */
+.streak-bar-track {
+  @apply w-full rounded-full h-3 overflow-hidden;
+  background: #e5e7eb;
+}
+.streak-bar-fill {
+  @apply h-3 rounded-full transition-all duration-500;
+  background: linear-gradient(90deg, var(--color-primary), #a78bfa);
+}
+
+/* ===== Анимация появления ===== */
+@keyframes pop-in {
+  0%   { opacity: 0; transform: scale(0.85); }
+  70%  { transform: scale(1.04); }
+  100% { opacity: 1; transform: scale(1); }
+}
+.pop-in {
+  animation: pop-in 0.3s ease forwards;
+}
+
+/* ===== Звезда-анимация при правильном ответе ===== */
+@keyframes star-burst {
+  0%   { opacity: 1; transform: scale(0.5) rotate(0deg); }
+  60%  { transform: scale(1.3) rotate(15deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+.star-burst {
+  animation: star-burst 0.45s cubic-bezier(.36,.07,.19,.97) forwards;
+}
+
+/* ===== Навбар ===== */
+.navbar {
+  @apply flex items-center justify-between px-5 py-3 mb-6;
+  background: #fff;
+  border-bottom: 1.5px solid #ede9ff;
+  border-radius: 0 0 1.2rem 1.2rem;
+  box-shadow: 0 2px 12px rgba(108,99,255,0.07);
+}
+
+/* ===== Форма ввода ===== */
+.input-field {
+  @apply w-full px-4 py-3 rounded-2xl border-2 text-center text-lg font-semibold
+         outline-none transition-all duration-150;
+  border-color: #e5e7eb;
+  background: #fff;
+}
+.input-field:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(108,99,255,0.15);
+}
+
+/* ===== Карточка награды ===== */
+.reward-card {
+  @apply flex flex-col items-center p-5 rounded-2xl border-2 transition-all duration-150;
+  background: #fff;
+  border-color: #e5e7eb;
+}
+.reward-card:hover {
+  border-color: var(--color-primary);
+  box-shadow: 0 4px 20px rgba(108,99,255,0.13);
+}

@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}TimTag — {{ child.name }}{% endblock %}
+
+{% block navbar_right %}
+  <a href="/math/select?child_name={{ child.name }}"
+     class="btn-primary py-2 px-5 text-base w-auto">
+    ▶ Заниматься
+  </a>
+{% endblock %}
+
+{% block content %}
+
+{# ── Шапка профиля ── #}
+<div class="text-center mb-6">
+  <div class="w-20 h-20 rounded-3xl flex items-center justify-center text-4xl font-black
+              text-white mx-auto mb-3"
+       style="background: linear-gradient(135deg,#6c63ff,#a78bfa);">
+    {{ child.name[0] | upper }}
+  </div>
+  <h2 class="text-2xl font-black text-gray-800">{{ child.name }}</h2>
+  <div class="flex items-center justify-center gap-2 mt-2">
+    <span class="badge badge-purple">Уровень {{ child.level }}</span>
+    <span class="badge badge-yellow">⭐ {{ child.points }}</span>
+    {% if child.streak > 0 %}
+    <span class="badge" style="background:#fce7f3;color:#db2777;">🔥 {{ child.streak }}/3</span>
+    {% endif %}
+  </div>
+</div>
+
+{# ── 4 карточки статистики ── #}
+<div class="grid grid-cols-2 gap-3 mb-4">
+  <div class="card p-4 text-center">
+    <div class="text-3xl font-black" style="color:#6c63ff;">{{ stats.total }}</div>
+    <div class="text-xs font-bold text-gray-400 mt-1">Всего задач</div>
+  </div>
+  <div class="card p-4 text-center">
+    <div class="text-3xl font-black" style="color:#f59e0b;">{{ stats.accuracy }}%</div>
+    <div class="text-xs font-bold text-gray-400 mt-1">Точность</div>
+  </div>
+  <div class="card p-4 text-center">
+    <div class="text-3xl font-black" style="color:#22c55e;">{{ stats.correct }}</div>
+    <div class="text-xs font-bold text-gray-400 mt-1">Правильно ✅</div>
+  </div>
+  <div class="card p-4 text-center">
+    <div class="text-3xl font-black" style="color:#ef4444;">{{ stats.wrong }}</div>
+    <div class="text-xs font-bold text-gray-400 mt-1">Ошибок ❌</div>
+  </div>
+</div>
+
+{# ── Прогресс-бар точности ── #}
+<div class="card p-4 mb-4">
+  <div class="flex justify-between text-sm font-bold text-gray-400 mb-2">
+    <span>Общая точность</span>
+    <span>{{ stats.accuracy }}%</span>
+  </div>
+  <div class="streak-bar-track">
+    <div class="streak-bar-fill" style="width:{{ stats.accuracy }}%"></div>
+  </div>
+</div>
+
+{# ── Слабые темы ── #}
+{% if stats.weak_topics %}
+<div class="card p-4 mb-4">
+  <h3 class="font-black text-gray-600 mb-3">📉 Сложные темы</h3>
+  {% for topic, errors in stats.weak_topics %}
+  <div class="flex justify-between items-center py-2
+              {% if not loop.first %}border-t border-gray-100{% endif %}">
+    <span class="font-semibold text-gray-700">{{ topic }}</span>
+    <span class="badge" style="background:#fee2e2;color:#ef4444;">
+      {{ errors }} ошибок
+    </span>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+{# ── Последние ответы ── #}
+{% if stats.recent %}
+<div class="card p-4 mb-4">
+  <h3 class="font-black text-gray-600 mb-3">🕐 Последние ответы</h3>
+  {% for s in stats.recent %}
+  <div class="flex items-center gap-3 py-2
+              {% if not loop.first %}border-t border-gray-100{% endif %}">
+    <div class="w-2.5 h-2.5 rounded-full flex-shrink-0
+                {{ 'bg-green-500' if s.is_correct else 'bg-red-400' }}"></div>
+    <div class="flex-1 text-sm text-gray-700 truncate">{{ s.question }}</div>
+    <div class="text-xs text-gray-400 flex-shrink-0">
+      {% if s.is_correct %}
+        <span class="text-green-500 font-bold">✅</span>
+      {% else %}
+        <span class="text-red-400">{{ s.user_answer }} → {{ s.correct_answer }}</span>
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+{# ── Запросы на награды (родительская зона) ── #}
+{% if stats.pending_rewards %}
+<div class="card p-4 mb-4" style="border-color:#fde68a;">
+  <h3 class="font-black text-amber-600 mb-3">⏳ Ждут одобрения</h3>
+  {% for req in stats.pending_rewards %}
+  <div class="flex items-center gap-3 py-3
+              {% if not loop.first %}border-t border-gray-100{% endif %}">
+    <span class="text-2xl">{{ req.reward_emoji }}</span>
+    <div class="flex-1">
+      <div class="font-bold text-gray-800">{{ req.reward_name }}</div>
+      <div class="text-xs text-gray-400">⭐ {{ req.points_cost }} очков</div>
+    </div>
+    <form action="/rewards/approve/{{ req.id }}" method="post">
+      <button type="submit"
+              class="px-4 py-2 rounded-xl font-bold text-sm text-white
+                     transition-all active:scale-95"
+              style="background:#22c55e;">
+        Выдать ✅
+      </button>
+    </form>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+{% endblock %}

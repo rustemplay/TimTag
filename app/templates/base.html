@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}TimTag{% endblock %}</title>
+
+  {# ── Tailwind CDN (для продакшна замени на собранный CSS) ── #}
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  {# ── Настройка Tailwind: расширяем палитру нашими цветами ── #}
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary:   { DEFAULT: '#6c63ff', light: '#ede9ff', dark: '#5548e0' },
+            success:   '#22c55e',
+            danger:    '#ef4444',
+            warning:   '#f59e0b',
+            brand_bg:  '#f5f3ff',
+          },
+          fontFamily: {
+            sans: ['Nunito', 'sans-serif'],
+          },
+          borderRadius: {
+            '2xl': '1rem',
+            '3xl': '1.5rem',
+          }
+        }
+      }
+    }
+  </script>
+
+  {# ── Google Fonts ── #}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+  {# ── Наш CSS (анимации, кастомные классы) ── #}
+  <link rel="stylesheet" href="/static/css/main.css">
+
+  {# ── HTMX ── #}
+  <script src="/static/js/htmx.min.js" defer></script>
+
+  {# ── Наш JS ── #}
+  <script src="/static/js/app.js" defer></script>
+
+  {% block extra_head %}{% endblock %}
+</head>
+
+<body class="font-sans min-h-screen" style="background-color:#f5f3ff;">
+
+  {# ═══════════════ НАВБАР ═══════════════ #}
+  <nav class="navbar">
+    <a href="/" class="flex items-center gap-2 text-xl font-black" style="color:#6c63ff;">
+      🎓 <span>TimTag</span>
+    </a>
+
+    {# Правая часть навбара — переопределяется в дочерних шаблонах #}
+    {% block navbar_right %}
+      <a href="/" class="text-sm font-semibold text-gray-400 hover:text-primary transition-colors">
+        ← На главную
+      </a>
+    {% endblock %}
+  </nav>
+
+  {# ═══════════════ ОСНОВНОЙ КОНТЕНТ ═══════════════ #}
+  <main class="max-w-lg mx-auto px-4 pb-12">
+    {% block content %}{% endblock %}
+  </main>
+
+  {# ═══════════════ ФУТЕР ═══════════════ #}
+  <footer class="text-center text-xs text-gray-300 py-6">
+    TimTag · Учимся с удовольствием 🚀
+  </footer>
+
+</body>
+</html>

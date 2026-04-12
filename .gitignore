@@ -1,0 +1,22 @@
+echo "__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+.env
+*.sqlite3
+*.db
+.DS_Store
+.idea/
+.vscode/
+*.log
+coverage/
+htmlcov/
+*.egg-info/
+dist/
+build/
+media/
+staticfiles/
