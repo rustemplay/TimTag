@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block title %}TimTag — Русский язык{% endblock %}
+
+{% block navbar_right %}
+  <div class="flex items-center gap-2">
+    <span class="badge badge-purple">Ур. {{ child.level }}</span>
+    <span class="badge badge-yellow">⭐ {{ child.points }}</span>
+  </div>
+{% endblock %}
+
+{% block content %}
+
+<div class="text-center mb-8">
+  <div class="text-5xl mb-3">📝</div>
+  <h2 class="text-3xl font-black text-gray-800">Русский язык</h2>
+  <p class="text-gray-400 font-semibold mt-1">{{ child.name }}, выбери тему!</p>
+  <div class="mt-2">
+    <span class="badge badge-purple">{{ level_info.description }}</span>
+  </div>
+</div>
+
+<div class="flex flex-col gap-4">
+
+  {# Всё подряд #}
+  <a href="/russian/task?topic=всё&child_name={{ child.name }}"
+     class="card p-5 flex items-center gap-4 active:scale-98 group"
+     style="border-color:#e5e7eb;">
+    <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl flex-shrink-0"
+         style="background:#ede9ff;">🎲</div>
+    <div>
+      <div class="font-black text-xl text-gray-800">Всё подряд</div>
+      <div class="text-sm text-gray-400 mt-0.5">Случайные задания по всем темам</div>
+    </div>
+    <div class="ml-auto text-gray-300 group-hover:text-primary transition-colors text-xl">→</div>
+  </a>
+
+  {# Орфография — уровень 1+ #}
+  <a href="/russian/task?topic=орфография&child_name={{ child.name }}"
+     class="card p-5 flex items-center gap-4 active:scale-98 group"
+     style="border-color:#e5e7eb;">
+    <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl flex-shrink-0"
+         style="background:#fce7f3;">✍️</div>
+    <div>
+      <div class="font-black text-xl text-gray-800">Орфография</div>
+      <div class="text-sm text-gray-400 mt-0.5">Жи/ши, безударные гласные, парные согласные</div>
+    </div>
+    <div class="ml-auto text-gray-300 group-hover:text-primary transition-colors text-xl">→</div>
+  </a>
+
+  {# Слоги — уровень 2+ #}
+  {% if child.level >= 2 %}
+  <a href="/russian/task?topic=слоги&child_name={{ child.name }}"
+     class="card p-5 flex items-center gap-4 active:scale-98 group"
+     style="border-color:#e5e7eb;">
+    <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl flex-shrink-0"
+         style="background:#dcfce7;">🔤</div>
+    <div>
+      <div class="font-black text-xl text-gray-800">Слоги</div>
+      <div class="text-sm text-gray-400 mt-0.5">Посчитай слоги, мягкий знак</div>
+    </div>
+    <div class="ml-auto text-gray-300 group-hover:text-primary transition-colors text-xl">→</div>
+  </a>
+  {% else %}
+  <div class="card p-5 flex items-center gap-4 opacity-50 cursor-not-allowed"
+       style="border-color:#e5e7eb;">
+    <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl flex-shrink-0 bg-gray-100">🔤</div>
+    <div>
+      <div class="font-black text-xl text-gray-400">Слоги</div>
+      <div class="text-sm text-gray-300 mt-0.5">Открывается на уровне 2</div>
+    </div>
+    <div class="ml-auto"><span class="badge" style="background:#f3f4f6; color:#9ca3af;">Ур. 2</span></div>
+  </div>
+  {% endif %}
+
+  {# Грамматика — уровень 4+ #}
+  {% if child.level >= 4 %}
+  <a href="/russian/task?topic=грамматика&child_name={{ child.name }}"
+     class="card p-5 flex items-center gap-4 active:scale-98 group"
+     style="border-color:#e5e7eb;">
+    <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl flex-shrink-0"
+         style="background:#fef3c7;">📚</div>
+    <div>
+      <div class="font-black text-xl text-gray-800">Грамматика</div>
+      <div class="text-sm text-gray-400 mt-0.5">Части речи, род существительного</div>
+    </div>
+    <div class="ml-auto text-gray-300 group-hover:text-primary transition-colors text-xl">→</div>
+  </a>
+  {% else %}
+  <div class="card p-5 flex items-center gap-4 opacity-50 cursor-not-allowed"
+       style="border-color:#e5e7eb;">
+    <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl flex-shrink-0 bg-gray-100">📚</div>
+    <div>
+      <div class="font-black text-xl text-gray-400">Грамматика</div>
+      <div class="text-sm text-gray-300 mt-0.5">Открывается на уровне 4</div>
+    </div>
+    <div class="ml-auto"><span class="badge" style="background:#f3f4f6; color:#9ca3af;">Ур. 4</span></div>
+  </div>
+  {% endif %}
+
+  {# Скорочтение — уровень 5 #}
+  {% if child.level >= 5 %}
+  <a href="/russian/task?topic=скорочтение&child_name={{ child.name }}"
+     class="card p-5 flex items-center gap-4 active:scale-98 group"
+     style="border-color:#e5e7eb;">
+    <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl flex-shrink-0"
+         style="background:#e0f2fe;">⚡</div>
+    <div>
+      <div class="font-black text-xl text-gray-800">Скорочтение</div>
+      <div class="text-sm text-gray-400 mt-0.5">Запомни слово за секунду!</div>
+    </div>
+    <div class="ml-auto text-gray-300 group-hover:text-primary transition-colors text-xl">→</div>
+  </a>
+  {% else %}
+  <div class="card p-5 flex items-center gap-4 opacity-50 cursor-not-allowed"
+       style="border-color:#e5e7eb;">
+    <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl flex-shrink-0 bg-gray-100">⚡</div>
+    <div>
+      <div class="font-black text-xl text-gray-400">Скорочтение</div>
+      <div class="text-sm text-gray-300 mt-0.5">Открывается на уровне 5</div>
+    </div>
+    <div class="ml-auto"><span class="badge" style="background:#f3f4f6; color:#9ca3af;">Ур. 5</span></div>
+  </div>
+  {% endif %}
+
+</div>
+
+{% endblock %}

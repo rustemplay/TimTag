@@ -2,7 +2,7 @@ from fastapi import FastAPI, Request
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy import select
-from app.routers import math, child, rewards
+from app.routers import math, child, rewards, russian
 from app.database import engine, Base, AsyncSession
 from app.models.models import Child
 from app import models
@@ -10,9 +10,11 @@ from app import models
 app = FastAPI(title="TimTag", debug=True)
 templates = Jinja2Templates(directory="app/templates")
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
+
 app.include_router(math.router)
 app.include_router(child.router)
 app.include_router(rewards.router)
+app.include_router(russian.router)   # ✅ новый предмет
 
 
 @app.on_event("startup")

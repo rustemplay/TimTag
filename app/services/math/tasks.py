@@ -1,3 +1,8 @@
+"""
+app/services/math/tasks.py
+Генератор задач по математике (бывший ai_client.py).
+Импорт в роутере: from app.services.math.tasks import generate_math_task, explain_mistake, LEVEL_CONFIG
+"""
 import json
 import random
 from app.services.ai_provider import chat
@@ -5,11 +10,11 @@ from app.services.ai_provider import chat
 EMOJIS = ["🍎", "🐦", "🐟", "🌸", "🚗", "📚", "🍊", "⭐", "🐶", "🎈", "🍕", "🐱", "🏀", "🍓", "🦋"]
 
 LEVEL_CONFIG = {
-    1: {"bounds": (1, 9),   "task_types": ["simple"],                                          "description": "числа до 10"},
-    2: {"bounds": (1, 19),  "task_types": ["simple", "missing"],                               "description": "числа до 20, найди ?"},
-    3: {"bounds": (5, 49),  "task_types": ["simple", "missing", "compare"],                    "description": "числа до 50, вычисли выражение"},
-    4: {"bounds": (5, 99),  "task_types": ["simple", "missing", "compare", "chain3"],          "description": "числа до 100, цепочки из 3"},
-    5: {"bounds": (10, 99), "task_types": ["simple", "missing", "compare", "chain3", "chain5"],"description": "всё вперемешку"},
+    1: {"bounds": (1, 9),   "task_types": ["simple"],                                           "description": "числа до 10"},
+    2: {"bounds": (1, 19),  "task_types": ["simple", "missing"],                                "description": "числа до 20, найди ?"},
+    3: {"bounds": (5, 49),  "task_types": ["simple", "missing", "compare"],                     "description": "числа до 50, вычисли выражение"},
+    4: {"bounds": (5, 99),  "task_types": ["simple", "missing", "compare", "chain3"],           "description": "числа до 100, цепочки из 3"},
+    5: {"bounds": (10, 99), "task_types": ["simple", "missing", "compare", "chain3", "chain5"], "description": "всё вперемешку"},
 }
 
 
@@ -113,10 +118,10 @@ async def generate_math_task(topic: str, level: int) -> dict:
 async def _enrich_with_ai(task, topic):
     q = task["question"]
     if topic == "вычитание":
-        action   = "вычитание (убрали/ушли/съели)"
+        action    = "вычитание (убрали/ушли/съели)"
         forbidden = "НЕ используй: дали, добавили"
     else:
-        action   = "сложение (добавили/пришли/нашли)"
+        action    = "сложение (добавили/пришли/нашли)"
         forbidden = "НЕ используй: убрали, ушли, съели"
 
     prompt = (

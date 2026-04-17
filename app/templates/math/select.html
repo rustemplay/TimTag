@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}TimTag — Выбор темы{% endblock %}
+{% block title %}TimTag — Выбор предмета{% endblock %}
 
 {% block navbar_right %}
   <div class="flex items-center gap-2">
@@ -24,7 +24,7 @@
   <div class="flex-1">
     <div class="font-bold text-gray-700">Серия правильных ответов</div>
     <div class="streak-bar-track mt-2">
-      <div class="streak-bar-fill" style="width: {{ (child.streak / 3 * 100)|int }}%"></div>
+      <div class="streak-bar-fill" style="width: {{ (child.streak / 8 * 100)|int }}%"></div>
     </div>
   </div>
   <span class="font-black text-lg" style="color:#6c63ff;">{{ child.streak }}/8</span>
@@ -47,19 +47,18 @@
     <div class="ml-auto text-gray-300 group-hover:text-primary transition-colors text-xl">→</div>
   </a>
 
-  {# Русский язык — в разработке #}
-  <div class="card p-5 flex items-center gap-4 opacity-50 cursor-not-allowed"
-       style="border-color:#e5e7eb;">
+  {# Русский язык — активен ✅ #}
+  <a href="/russian/select?child_name={{ child.name }}"
+     class="card p-5 flex items-center gap-4 hover:border-primary transition-all
+            active:scale-98 group" style="border-color:#e5e7eb;">
     <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl
-                flex-shrink-0 bg-gray-100">🅰️</div>
+                flex-shrink-0" style="background:#fce7f3;">📝</div>
     <div>
-      <div class="font-black text-xl text-gray-400">Русский язык</div>
-      <div class="text-sm text-gray-300 mt-0.5">Буквы, слоги, правила</div>
+      <div class="font-black text-xl text-gray-800">Русский язык</div>
+      <div class="text-sm text-gray-400 mt-0.5">Орфография, слоги, грамматика</div>
     </div>
-    <div class="ml-auto">
-      <span class="badge" style="background:#f3f4f6; color:#9ca3af;">Скоро</span>
-    </div>
-  </div>
+    <div class="ml-auto text-gray-300 group-hover:text-primary transition-colors text-xl">→</div>
+  </a>
 
   {# Чтение — в разработке #}
   <div class="card p-5 flex items-center gap-4 opacity-50 cursor-not-allowed"

@@ -23,12 +23,12 @@
     <span class="badge badge-purple">Уровень {{ child.level }}</span>
     <span class="badge badge-yellow">⭐ {{ child.points }}</span>
     {% if child.streak > 0 %}
-    <span class="badge" style="background:#fce7f3;color:#db2777;">🔥 {{ child.streak }}/3</span>
+    <span class="badge" style="background:#fce7f3;color:#db2777;">🔥 {{ child.streak }}/8</span>
     {% endif %}
   </div>
 </div>
 
-{# ── 4 карточки статистики ── #}
+{# ── 4 карточки общей статистики ── #}
 <div class="grid grid-cols-2 gap-3 mb-4">
   <div class="card p-4 text-center">
     <div class="text-3xl font-black" style="color:#6c63ff;">{{ stats.total }}</div>
@@ -59,14 +59,42 @@
   </div>
 </div>
 
+{# ── Статистика по предметам ── #}
+{% if stats.by_subject %}
+<div class="card p-4 mb-4">
+  <h3 class="font-black text-gray-600 mb-3">📊 По предметам</h3>
+  {% for subj in stats.by_subject %}
+  <div class="flex items-center gap-3 py-2
+              {% if not loop.first %}border-t border-gray-100{% endif %}">
+    <span class="text-xl">
+      {% if subj.subject == "математика" %}🔢
+      {% elif subj.subject == "русский" %}📝
+      {% else %}📖{% endif %}
+    </span>
+    <div class="flex-1">
+      <div class="font-bold text-gray-700 capitalize">{{ subj.subject }}</div>
+      <div class="text-xs text-gray-400">{{ subj.total }} задач</div>
+    </div>
+    <div class="text-right">
+      <div class="font-black text-sm" style="color:#6c63ff;">{{ subj.accuracy }}%</div>
+      <div class="text-xs text-gray-400">{{ subj.correct }}/{{ subj.total }}</div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
 {# ── Слабые темы ── #}
 {% if stats.weak_topics %}
 <div class="card p-4 mb-4">
   <h3 class="font-black text-gray-600 mb-3">📉 Сложные темы</h3>
-  {% for topic, errors in stats.weak_topics %}
+  {% for subject, topic, errors in stats.weak_topics %}
   <div class="flex justify-between items-center py-2
               {% if not loop.first %}border-t border-gray-100{% endif %}">
-    <span class="font-semibold text-gray-700">{{ topic }}</span>
+    <div>
+      <span class="font-semibold text-gray-700">{{ topic }}</span>
+      <span class="text-xs text-gray-400 ml-1">({{ subject }})</span>
+    </div>
     <span class="badge" style="background:#fee2e2;color:#ef4444;">
       {{ errors }} ошибок
     </span>
@@ -82,14 +110,24 @@
   {% for s in stats.recent %}
   <div class="flex items-center gap-3 py-2
               {% if not loop.first %}border-t border-gray-100{% endif %}">
-    <div class="w-2.5 h-2.5 rounded-full flex-shrink-0
+    {# Иконка предмета #}
+    <span class="text-sm flex-shrink-0">
+      {% if s.subject == "математика" %}🔢
+      {% elif s.subject == "русский" %}📝
+      {% else %}📖{% endif %}
+    </span>
+    <div class="w-2 h-2 rounded-full flex-shrink-0
                 {{ 'bg-green-500' if s.is_correct else 'bg-red-400' }}"></div>
     <div class="flex-1 text-sm text-gray-700 truncate">{{ s.question }}</div>
     <div class="text-xs text-gray-400 flex-shrink-0">
       {% if s.is_correct %}
         <span class="text-green-500 font-bold">✅</span>
       {% else %}
-        <span class="text-red-400">{{ s.user_answer }} → {{ s.correct_answer }}</span>
+        {% if s.user_text %}
+          <span class="text-red-400">{{ s.user_text }} → {{ s.correct_text }}</span>
+        {% else %}
+          <span class="text-red-400">{{ s.user_answer }} → {{ s.correct_answer }}</span>
+        {% endif %}
       {% endif %}
     </div>
   </div>

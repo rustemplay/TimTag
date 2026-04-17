@@ -150,3 +150,38 @@ body {
   border-color: var(--color-primary);
   box-shadow: 0 4px 20px rgba(108,99,255,0.13);
 }
+/* ===== Широкая кнопка-ответ (для русского языка) ===== */
+.answer-btn-wide {
+  @apply flex items-center justify-center font-bold text-lg
+         rounded-2xl border-2 transition-all duration-100
+         active:scale-90 select-none cursor-pointer
+         px-6 py-3;
+  min-width: 120px;
+  border-color: #e5e7eb;
+  background: #fff;
+  color: #374151;
+}
+.answer-btn-wide:hover {
+  border-color: var(--color-primary);
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  transform: scale(1.04);
+}
+
+/* Добавить в конец app/static/css/main.css */
+/* ===== Широкая кнопка-ответ (русский язык, варианты слов) ===== */
+.answer-btn-wide {
+  @apply flex items-center justify-center font-bold text-lg
+         rounded-2xl border-2 transition-all duration-100
+         active:scale-90 select-none cursor-pointer
+         px-6 py-3 w-full;
+  border-color: #e5e7eb;
+  background: #fff;
+  color: #374151;
+}
+.answer-btn-wide:hover {
+  border-color: var(--color-primary);
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  transform: scale(1.02);
+}
