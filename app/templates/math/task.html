@@ -3,38 +3,38 @@
 {% block title %}TimTag — Задача{% endblock %}
 
 {% block navbar_right %}
+  {% set math_level  = child.get_level("математика") %}
+  {% set math_streak = child.get_streak("математика") %}
   <div class="flex items-center gap-2">
-    <span class="badge badge-purple">Ур. {{ child.level }}</span>
+    <span class="badge badge-purple">Мат. Ур. {{ math_level }}</span>
     <span class="badge badge-yellow">⭐ {{ child.points }}</span>
-    {% if child.streak > 0 %}
-    <span class="badge" style="background:#fce7f3; color:#db2777;">🔥 {{ child.streak }}</span>
+    {% if math_streak > 0 %}
+    <span class="badge" style="background:#fce7f3; color:#db2777;">🔥 {{ math_streak }}</span>
     {% endif %}
   </div>
 {% endblock %}
 
 {% block content %}
 
-{# ── Стрик-прогресс ── #}
+{% set streak       = child.get_streak("математика") %}
+{% set wrong_streak = child.get_wrong_streak("математика") %}
 <div class="mb-5">
   <div class="flex justify-between text-sm text-gray-400 font-semibold mb-1">
     <span>{{ child.name }}</span>
     <div class="flex items-center gap-3">
-      {# Счётчик ошибок — показываем только если есть #}
-      {% if child.wrong_streak > 0 %}
-      <span style="color:#ef4444;">❌ {{ child.wrong_streak }}/3</span>
+      {% if wrong_streak > 0 %}
+      <span style="color:#ef4444;">❌ {{ wrong_streak }}/3</span>
       {% endif %}
-      <span>🔥 {{ child.streak }}/8</span>
+      <span>🔥 {{ streak }}/8</span>
     </div>
   </div>
   <div class="streak-bar-track">
-    <div class="streak-bar-fill" style="width: {{ (child.streak / 8 * 100)|int }}%"></div>
+    <div class="streak-bar-fill" style="width: {{ (streak / 8 * 100)|int }}%"></div>
   </div>
 </div>
 
-{# ── Блок задачи (HTMX заменяет этот div) ── #}
 <div id="task-block">
 
-  {# Карточка вопроса #}
   <div class="card p-8 text-center mb-6 pop-in">
     <div class="text-xs font-bold uppercase tracking-widest text-gray-300 mb-4">
       {{ topic }}
@@ -42,10 +42,8 @@
     <p class="text-2xl font-black text-gray-800 leading-snug">
       {{ task.question }}
     </p>
-
   </div>
 
-  {# Форма с вариантами ответов #}
   <form hx-post="/math/check"
         hx-target="#task-block"
         hx-swap="outerHTML">
@@ -59,10 +57,7 @@
 
     <div class="flex flex-wrap gap-3 justify-center">
       {% for n in range(0, max_answer + 1) %}
-      <button type="submit"
-              name="answer"
-              value="{{ n }}"
-              class="answer-btn">
+      <button type="submit" name="answer" value="{{ n }}" class="answer-btn">
         {{ n }}
       </button>
       {% endfor %}

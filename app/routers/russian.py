@@ -18,30 +18,35 @@ async def select_topic(
     child_name: str,
     db: AsyncSession = Depends(get_db),
 ):
-    child = await get_or_create_child(db, child_name)
-    level_info = LEVEL_CONFIG.get(child.level, LEVEL_CONFIG[1])
+    child      = await get_or_create_child(db, child_name)
+    level      = child.get_level("русский")
+    level_info = LEVEL_CONFIG.get(level, LEVEL_CONFIG[1])
     return templates.TemplateResponse(request, "russian/select.html", {
         "child":      child,
         "level_info": level_info,
+        "level":      level,
     })
 
 
 @router.get("/task")
 async def get_task(
     request: Request,
-    topic: str = "всё",
+    topic:      str = "всё",
     child_name: str = "Ребёнок",
     db: AsyncSession = Depends(get_db),
 ):
     child = await get_or_create_child(db, child_name)
-    task  = await generate_russian_task(topic, child.level)
+    level = child.get_level("русский")
+    task  = await generate_russian_task(topic, level)
 
     return templates.TemplateResponse(request, "russian/task.html", {
-        "task":       task,
-        "topic":      topic,
-        "child":      child,
-        "task_json":  json.dumps(task, ensure_ascii=False),
-        "level_config": LEVEL_CONFIG.get(child.level, LEVEL_CONFIG[1]),
+        "task":         task,
+        "topic":        topic,
+        "child":        child,
+        "subject":      "русский",
+        "level":        level,
+        "task_json":    json.dumps(task, ensure_ascii=False),
+        "level_config": LEVEL_CONFIG.get(level, LEVEL_CONFIG[1]),
     })
 
 
@@ -69,19 +74,15 @@ async def check_answer(
     if not is_correct:
         explanation = await explain_russian_mistake(task, user_answer)
 
-    child = await save_answer(
+    child, leveled_up = await save_answer(
         db, child,
-        subject="русский",
-        topic=topic,
-        question=task.get("question", ""),
-        correct_answer=0,        # текстовые ответы — храним 0
-        user_answer=0,
-        is_correct=is_correct,
-        correct_text=correct,
-        user_text=user_answer,
+        subject      = "русский",
+        topic        = topic,
+        question     = task.get("question", ""),
+        is_correct   = is_correct,
+        correct_text = correct,
+        user_text    = user_answer,
     )
-
-    leveled_up = is_correct and child.streak == 0 and child.level > 1
 
     return templates.TemplateResponse(request, "russian/feedback.html", {
         "is_correct":  is_correct,
@@ -89,6 +90,7 @@ async def check_answer(
         "correct":     correct,
         "user_answer": user_answer,
         "child":       child,
+        "subject":     "русский",
         "topic":       topic,
         "leveled_up":  leveled_up,
         "hint":        task.get("hint", ""),

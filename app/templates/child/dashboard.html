@@ -20,15 +20,63 @@
   </div>
   <h2 class="text-2xl font-black text-gray-800">{{ child.name }}</h2>
   <div class="flex items-center justify-center gap-2 mt-2">
-    <span class="badge badge-purple">Уровень {{ child.level }}</span>
-    <span class="badge badge-yellow">⭐ {{ child.points }}</span>
-    {% if child.streak > 0 %}
-    <span class="badge" style="background:#fce7f3;color:#db2777;">🔥 {{ child.streak }}/8</span>
-    {% endif %}
+    <span class="badge badge-yellow">⭐ {{ child.points }} очков</span>
   </div>
 </div>
 
-{# ── 4 карточки общей статистики ── #}
+{# ── Уровни по предметам ── #}
+<div class="card p-4 mb-4">
+  <h3 class="font-black text-gray-600 mb-3">📊 Уровни по предметам</h3>
+
+  {# Математика #}
+  {% set m_level  = child.get_level("математика") %}
+  {% set m_streak = child.get_streak("математика") %}
+  {% set m_pts    = child.get_subject_points("математика") %}
+  <div class="mb-4">
+    <div class="flex items-center justify-between mb-1">
+      <div class="flex items-center gap-2">
+        <span class="text-xl">🔢</span>
+        <span class="font-black text-gray-700">Математика</span>
+        <span class="badge badge-purple" style="font-size:11px;">Ур. {{ m_level }}/5</span>
+      </div>
+      <div class="flex items-center gap-2 text-sm">
+        {% if m_streak > 0 %}
+        <span style="color:#db2777;">🔥 {{ m_streak }}/8</span>
+        {% endif %}
+        <span class="text-gray-400">⭐ {{ m_pts }}</span>
+      </div>
+    </div>
+    <div class="streak-bar-track">
+      <div class="streak-bar-fill" style="width: {{ (m_streak / 8 * 100)|int }}%"></div>
+    </div>
+  </div>
+
+  {# Русский язык #}
+  {% set r_level  = child.get_level("русский") %}
+  {% set r_streak = child.get_streak("русский") %}
+  {% set r_pts    = child.get_subject_points("русский") %}
+  <div class="mb-1">
+    <div class="flex items-center justify-between mb-1">
+      <div class="flex items-center gap-2">
+        <span class="text-xl">📝</span>
+        <span class="font-black text-gray-700">Русский язык</span>
+        <span class="badge badge-purple" style="font-size:11px;">Ур. {{ r_level }}/3</span>
+      </div>
+      <div class="flex items-center gap-2 text-sm">
+        {% if r_streak > 0 %}
+        <span style="color:#db2777;">🔥 {{ r_streak }}/8</span>
+        {% endif %}
+        <span class="text-gray-400">⭐ {{ r_pts }}</span>
+      </div>
+    </div>
+    <div class="streak-bar-track">
+      <div class="streak-bar-fill" style="width: {{ (r_streak / 8 * 100)|int }}%"
+           style="background: linear-gradient(90deg, #ec4899, #f9a8d4);"></div>
+    </div>
+  </div>
+</div>
+
+{# ── Общая статистика ── #}
 <div class="grid grid-cols-2 gap-3 mb-4">
   <div class="card p-4 text-center">
     <div class="text-3xl font-black" style="color:#6c63ff;">{{ stats.total }}</div>
@@ -48,21 +96,10 @@
   </div>
 </div>
 
-{# ── Прогресс-бар точности ── #}
-<div class="card p-4 mb-4">
-  <div class="flex justify-between text-sm font-bold text-gray-400 mb-2">
-    <span>Общая точность</span>
-    <span>{{ stats.accuracy }}%</span>
-  </div>
-  <div class="streak-bar-track">
-    <div class="streak-bar-fill" style="width:{{ stats.accuracy }}%"></div>
-  </div>
-</div>
-
 {# ── Статистика по предметам ── #}
 {% if stats.by_subject %}
 <div class="card p-4 mb-4">
-  <h3 class="font-black text-gray-600 mb-3">📊 По предметам</h3>
+  <h3 class="font-black text-gray-600 mb-3">📈 По предметам</h3>
   {% for subj in stats.by_subject %}
   <div class="flex items-center gap-3 py-2
               {% if not loop.first %}border-t border-gray-100{% endif %}">
@@ -95,9 +132,7 @@
       <span class="font-semibold text-gray-700">{{ topic }}</span>
       <span class="text-xs text-gray-400 ml-1">({{ subject }})</span>
     </div>
-    <span class="badge" style="background:#fee2e2;color:#ef4444;">
-      {{ errors }} ошибок
-    </span>
+    <span class="badge" style="background:#fee2e2;color:#ef4444;">{{ errors }} ошибок</span>
   </div>
   {% endfor %}
 </div>
@@ -110,11 +145,8 @@
   {% for s in stats.recent %}
   <div class="flex items-center gap-3 py-2
               {% if not loop.first %}border-t border-gray-100{% endif %}">
-    {# Иконка предмета #}
     <span class="text-sm flex-shrink-0">
-      {% if s.subject == "математика" %}🔢
-      {% elif s.subject == "русский" %}📝
-      {% else %}📖{% endif %}
+      {% if s.subject == "математика" %}🔢{% elif s.subject == "русский" %}📝{% else %}📖{% endif %}
     </span>
     <div class="w-2 h-2 rounded-full flex-shrink-0
                 {{ 'bg-green-500' if s.is_correct else 'bg-red-400' }}"></div>
@@ -135,7 +167,7 @@
 </div>
 {% endif %}
 
-{# ── Запросы на награды (родительская зона) ── #}
+{# ── Запросы на награды ── #}
 {% if stats.pending_rewards %}
 <div class="card p-4 mb-4" style="border-color:#fde68a;">
   <h3 class="font-black text-amber-600 mb-3">⏳ Ждут одобрения</h3>
@@ -149,8 +181,7 @@
     </div>
     <form action="/rewards/approve/{{ req.id }}" method="post">
       <button type="submit"
-              class="px-4 py-2 rounded-xl font-bold text-sm text-white
-                     transition-all active:scale-95"
+              class="px-4 py-2 rounded-xl font-bold text-sm text-white transition-all active:scale-95"
               style="background:#22c55e;">
         Выдать ✅
       </button>

@@ -4,93 +4,64 @@
 
 {% block navbar_right %}
   <div class="flex items-center gap-2">
-    <span class="badge badge-purple">Ур. {{ child.level }}</span>
+    <span class="badge badge-purple">Рус. Ур. {{ level }}</span>
     <span class="badge badge-yellow">⭐ {{ child.points }}</span>
-    {% if child.streak > 0 %}
-    <span class="badge" style="background:#fce7f3; color:#db2777;">🔥 {{ child.streak }}</span>
+    {% set streak = child.get_streak("русский") %}
+    {% if streak > 0 %}
+    <span class="badge" style="background:#fce7f3; color:#db2777;">🔥 {{ streak }}</span>
     {% endif %}
   </div>
 {% endblock %}
 
 {% block content %}
 
-{# ── Прогресс-бар стрика ── #}
+{# ── Стрик-прогресс по русскому ── #}
+{% set streak      = child.get_streak("русский") %}
+{% set wrong_streak = child.get_wrong_streak("русский") %}
 <div class="mb-5">
   <div class="flex justify-between text-sm text-gray-400 font-semibold mb-1">
     <span>{{ child.name }}</span>
     <div class="flex items-center gap-3">
-      {% if child.wrong_streak > 0 %}
-      <span style="color:#ef4444;">❌ {{ child.wrong_streak }}/3</span>
+      {% if wrong_streak > 0 %}
+      <span style="color:#ef4444;">❌ {{ wrong_streak }}/3</span>
       {% endif %}
-      <span>🔥 {{ child.streak }}/8</span>
+      <span>🔥 {{ streak }}/8</span>
     </div>
   </div>
   <div class="streak-bar-track">
-    <div class="streak-bar-fill" style="width: {{ (child.streak / 8 * 100)|int }}%"></div>
+    <div class="streak-bar-fill" style="width: {{ (streak / 8 * 100)|int }}%"></div>
   </div>
 </div>
 
 {# ── Блок задачи (HTMX заменяет этот div) ── #}
 <div id="task-block">
 
-  {# Карточка вопроса #}
   <div class="card p-8 text-center mb-6 pop-in">
     <div class="text-xs font-bold uppercase tracking-widest text-gray-300 mb-4">
       📝 русский язык · {{ topic }}
     </div>
-
-    {# ══ СКОРОЧТЕНИЕ: особый UI ══ #}
-    {% if task.type == "speed_read" %}
-      <p class="text-lg font-bold text-gray-500 mb-4">{{ task.question }}</p>
-      {# Слово — показывается на display_ms мс, потом скрывается #}
-      <div id="speed-word"
-           class="text-5xl font-black mb-4 transition-opacity duration-300"
-           style="color:#6c63ff;">
-        {{ task.word }}
-      </div>
-      <div id="speed-hint" class="text-sm text-gray-400" style="display:none;">
-        Теперь выбери слово, которое ты запомнил 👇
-      </div>
-
-    {% else %}
-      {# ══ Обычный вопрос ══ #}
-      <p class="text-2xl font-black text-gray-800 leading-snug">
-        {{ task.question }}
-      </p>
+    <p class="text-2xl font-black text-gray-800 leading-snug">
+      {{ task.question }}
+    </p>
+    {% if task.check_word %}
+    <p class="text-sm text-gray-400 mt-3">
+      💡 Подумай: <span class="font-bold">{{ task.check_word }}</span>
+    </p>
     {% endif %}
   </div>
 
-  {# ── Форма с вариантами ── #}
-  <form id="answer-form"
-        hx-post="/russian/check"
+  <form hx-post="/russian/check"
         hx-target="#task-block"
         hx-swap="outerHTML">
 
-    <input type="hidden" name="correct"     value="{{ task.correct }}">
-    <input type="hidden" name="topic"       value="{{ topic }}">
-    <input type="hidden" name="child_name"  value="{{ child.name }}">
-    <input type="hidden" name="task_json"   value="{{ task_json }}">
+    <input type="hidden" name="correct"    value="{{ task.correct }}">
+    <input type="hidden" name="topic"      value="{{ topic }}">
+    <input type="hidden" name="child_name" value="{{ child.name }}">
+    <input type="hidden" name="task_json"  value="{{ task_json }}">
 
-    {% if task.type == "speed_read" %}
-    {# Кнопки скорочтения — показываем сразу, но форму блокируем до исчезновения слова #}
-    <div id="speed-options" style="opacity:0; transition: opacity 0.4s;">
-      <p class="text-center text-sm font-bold text-gray-400 mb-4">Какое слово ты видел? 👇</p>
-      <div class="flex flex-col gap-3">
-        {% for opt in task.options %}
-        <button type="submit"
-                name="answer"
-                value="{{ opt }}"
-                class="answer-btn-wide">
-          {{ opt }}
-        </button>
-        {% endfor %}
-      </div>
-    </div>
-
-    {% else %}
-    {# Обычные кнопки #}
     <p class="text-center text-sm font-bold text-gray-400 mb-4">Выбери ответ 👇</p>
-    <div class="flex flex-wrap gap-3 justify-center">
+
+    <div class="flex flex-col gap-3">
       {% for opt in task.options %}
       <button type="submit"
               name="answer"
@@ -100,30 +71,9 @@
       </button>
       {% endfor %}
     </div>
-    {% endif %}
 
   </form>
 
 </div>
-
-{# ── Скрипт скорочтения ── #}
-{% if task.type == "speed_read" %}
-<script>
-  (function() {
-    var ms = {{ task.display_ms }};
-    var wordEl    = document.getElementById('speed-word');
-    var hintEl    = document.getElementById('speed-hint');
-    var optionsEl = document.getElementById('speed-options');
-
-    setTimeout(function() {
-      // Прячем слово
-      wordEl.style.opacity = '0';
-      hintEl.style.display = 'block';
-      // Показываем варианты
-      optionsEl.style.opacity = '1';
-    }, ms);
-  })();
-</script>
-{% endif %}
 
 {% endblock %}
