@@ -11,69 +11,125 @@
 {% block content %}
 
 <div class="text-center mb-8">
-  <div class="text-5xl mb-3">👋</div>
-  <h2 class="text-3xl font-black text-gray-800">Привет, {{ child.name }}!</h2>
-  <p class="text-gray-400 font-semibold mt-1">Что будем учить сегодня?</p>
+  {# Аватар-герой — такой же, как на главной #}
+  <div class="w-20 h-20 mx-auto rounded-3xl flex items-center justify-center
+              font-black text-4xl text-white shadow-lg mb-4 pop-in"
+       style="background: linear-gradient(135deg, #6c63ff, #a78bfa);">
+    {{ child.name[0] | upper }}
+  </div>
+  <h2 class="text-3xl font-black text-gray-800">
+    Привет, {{ child.name }}!
+  </h2>
+
+  {# Приветствие по времени суток #}
+  <p class="text-gray-400 font-semibold mt-1">
+    {% if now.hour < 12 %}☀️ Доброе утро!
+    {% elif now.hour < 18 %}🌤️ Хороший день для учёбы!
+    {% else %}🌙 Вечерний рывок к знаниям!
+    {% endif %}
+  </p>
+  <p class="text-sm text-gray-300 mt-2">Куда отправимся сегодня?</p>
 </div>
 
-{# ── Предметы с отдельными уровнями ── #}
+{# ── Карточки предметов ── #}
 <div class="flex flex-col gap-4">
 
   {# Математика #}
   {% set math_level  = child.get_level("математика") %}
   {% set math_streak = child.get_streak("математика") %}
   <a href="/math/task?topic=арифметика&child_name={{ child.name }}"
-     class="card p-5 flex items-center gap-4 hover:border-primary transition-all active:scale-98 group"
-     style="border-color:#e5e7eb;">
-    <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl flex-shrink-0"
-         style="background:#ede9ff;">🔢</div>
-    <div class="flex-1">
-      <div class="font-black text-xl text-gray-800">Математика</div>
+     class="card group p-5 flex items-center gap-4 transition-all duration-300
+            hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] pop-in"
+     style="border-left: 6px solid #6c63ff; animation-delay: 0.1s;">
+    <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl flex-shrink-0
+                bg-primary-light shadow-md group-hover:scale-110 transition-transform">
+      🔢
+    </div>
+    <div class="flex-1 min-w-0">
+      <div class="font-black text-xl text-gray-800 flex items-center gap-2">
+        Математика
+        <span class="text-sm text-gray-400 group-hover:text-primary transition-colors">→</span>
+      </div>
       <div class="text-sm text-gray-400 mt-0.5">Сложение, вычитание, цепочки</div>
+      <div class="mt-3">
+        <div class="flex justify-between text-xs font-bold text-gray-400 mb-1">
+          <span>Уровень {{ math_level }}/5</span>
+          <span>{{ (math_level/5*100)|int }}%</span>
+        </div>
+        <div class="streak-bar-track">
+          <div class="streak-bar-fill" style="width: {{ (math_level/5*100)|int }}%"></div>
+        </div>
+      </div>
       <div class="flex items-center gap-2 mt-2">
-        <span class="badge badge-purple" style="font-size:11px;">Ур. {{ math_level }}/5</span>
+        <span class="badge badge-purple text-xs">🔢 Ур.{{ math_level }}</span>
         {% if math_streak > 0 %}
-        <span class="badge" style="background:#fce7f3;color:#db2777;font-size:11px;">🔥 {{ math_streak }}/8</span>
+        <span class="badge text-xs" style="background:#fef3c7;color:#d97706;">🔥 {{ math_streak }}/8</span>
         {% endif %}
       </div>
     </div>
-    <div class="ml-auto text-gray-300 group-hover:text-primary transition-colors text-xl">→</div>
   </a>
 
   {# Русский язык #}
   {% set rus_level  = child.get_level("русский") %}
   {% set rus_streak = child.get_streak("русский") %}
   <a href="/russian/select?child_name={{ child.name }}"
-     class="card p-5 flex items-center gap-4 hover:border-primary transition-all active:scale-98 group"
-     style="border-color:#e5e7eb;">
-    <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl flex-shrink-0"
-         style="background:#fce7f3;">📝</div>
-    <div class="flex-1">
-      <div class="font-black text-xl text-gray-800">Русский язык</div>
+     class="card group p-5 flex items-center gap-4 transition-all duration-300
+            hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] pop-in"
+     style="border-left: 6px solid #ec4899; animation-delay: 0.2s;">
+    <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl flex-shrink-0
+                shadow-md group-hover:scale-110 transition-transform"
+         style="background:#fce7f3;">
+      📝
+    </div>
+    <div class="flex-1 min-w-0">
+      <div class="font-black text-xl text-gray-800 flex items-center gap-2">
+        Русский язык
+        <span class="text-sm text-gray-400 group-hover:text-primary transition-colors">→</span>
+      </div>
       <div class="text-sm text-gray-400 mt-0.5">Орфография, слоги, мягкий знак</div>
+      <div class="mt-3">
+        <div class="flex justify-between text-xs font-bold text-gray-400 mb-1">
+          <span>Уровень {{ rus_level }}/3</span>
+          <span>{{ (rus_level/3*100)|int }}%</span>
+        </div>
+        <div class="streak-bar-track">
+          <div class="streak-bar-fill" style="width: {{ (rus_level/3*100)|int }}%; background: linear-gradient(90deg, #ec4899, #f472b6);"></div>
+        </div>
+      </div>
       <div class="flex items-center gap-2 mt-2">
-        <span class="badge badge-purple" style="font-size:11px;">Ур. {{ rus_level }}/3</span>
+        <span class="badge badge-purple text-xs">📝 Ур.{{ rus_level }}</span>
         {% if rus_streak > 0 %}
-        <span class="badge" style="background:#fce7f3;color:#db2777;font-size:11px;">🔥 {{ rus_streak }}/8</span>
+        <span class="badge text-xs" style="background:#fef3c7;color:#d97706;">🔥 {{ rus_streak }}/8</span>
         {% endif %}
       </div>
     </div>
-    <div class="ml-auto text-gray-300 group-hover:text-primary transition-colors text-xl">→</div>
   </a>
 
-  {# Чтение — в разработке #}
-  <div class="card p-5 flex items-center gap-4 opacity-50 cursor-not-allowed"
-       style="border-color:#e5e7eb;">
-    <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl flex-shrink-0 bg-gray-100">📖</div>
+  {# Чтение (скоро) #}
+  <div class="card p-5 flex items-center gap-4 opacity-70 relative overflow-hidden
+              border-2 border-dashed border-gray-200 hover:border-gray-300 transition-all duration-300 pop-in"
+       style="cursor: not-allowed; animation-delay: 0.3s;">
+    <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl flex-shrink-0 bg-gray-100">
+      📖
+    </div>
     <div class="flex-1">
       <div class="font-black text-xl text-gray-400">Чтение</div>
-      <div class="text-sm text-gray-300 mt-0.5">Скоро...</div>
+      <div class="text-sm text-gray-300 mt-0.5">Откроется после новых обновлений...</div>
+      <div class="mt-3 flex items-center gap-2">
+        <span class="badge bg-gray-100 text-gray-400 text-xs">🔒 Скоро</span>
+        <span class="inline-block w-4 h-4 rounded-full bg-gray-200 animate-ping ml-auto"></span>
+      </div>
     </div>
-    <div class="ml-auto">
-      <span class="badge" style="background:#f3f4f6;color:#9ca3af;">Скоро</span>
+    <div class="absolute -right-3 -bottom-3 text-6xl transform rotate-12 opacity-20">
+      🗝️
     </div>
   </div>
 
+</div>
+
+{# Вдохновляющая фраза #}
+<div class="text-center mt-8 text-sm text-gray-300 font-semibold">
+  Каждый урок — шаг к суперсиле! 💪
 </div>
 
 {% endblock %}

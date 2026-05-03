@@ -1,87 +1,223 @@
 {% extends "base.html" %}
 
-{% block title %}TimTag — Главная{% endblock %}
+{% block title %}Остров героев | TimTag{% endblock %}
 
-{% block navbar_right %}{% endblock %}
+{% block extra_head %}
+<style>
+  /* ===== Атмосферный фон Острова ===== */
+  .island-bg {
+    background: linear-gradient(180deg, #e0f2fe 0%, #f5f3ff 50%, #d1fae5 100%);
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+  }
+  /* Облака */
+  .cloud {
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+    opacity: 0.7;
+    animation: floatCloud 20s infinite ease-in-out;
+  }
+  .cloud::before, .cloud::after {
+    content: '';
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+  }
+  .cloud1 { width: 120px; height: 40px; top: 10%; left: -150px; animation-delay: 0s; }
+  .cloud2 { width: 80px; height: 30px; top: 20%; left: 70%; animation-delay: -7s; }
+  .cloud3 { width: 150px; height: 50px; top: 60%; left: -200px; animation-delay: -15s; }
+
+  @keyframes floatCloud {
+    from { transform: translateX(0); }
+    to { transform: translateX(calc(100vw + 300px)); }
+  }
+
+  /* ===== Карточка героя ===== */
+  .hero-card {
+    background: white;
+    border-radius: 2rem;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.08), 0 0 0 3px rgba(108,99,255,0.1);
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-card:active {
+    transform: scale(0.96);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+  }
+
+  /* Цветные полосы по краю (индикатор стихии) */
+  .hero-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 6px;
+    background: linear-gradient(90deg, var(--hero-color, #6c63ff), var(--hero-color-light, #a78bfa));
+  }
+
+  /* Аватар */
+  .hero-avatar {
+    width: 70px; height: 70px;
+    border-radius: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    background: var(--hero-color, #6c63ff);
+    color: white;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+    flex-shrink: 0;
+  }
+
+  /* Кнопка "Играть" */
+  .btn-play {
+    background: var(--hero-color, #6c63ff);
+    color: white;
+    padding: 0.75rem 2rem;
+    border-radius: 2rem;
+    font-weight: 800;
+    font-size: 1.2rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 10px 20px -5px var(--hero-color, #6c63ff);
+    transition: transform 0.1s;
+    text-decoration: none;
+  }
+  .btn-play:active {
+    transform: scale(0.9);
+  }
+
+  /* Иконки действий (под кнопкой) */
+  .action-icons a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px; height: 44px;
+    border-radius: 14px;
+    background: #f3f4f6;
+    font-size: 1.3rem;
+    color: #4b5563;
+    transition: all 0.2s;
+  }
+  .action-icons a:active {
+    background: #e5e7eb;
+    transform: scale(0.9);
+  }
+
+  /* Счётчик стрика (огонь) */
+  .streak-fire {
+    display: inline-flex;
+    align-items: center;
+    background: #fff7ed;
+    color: #ea580c;
+    padding: 0.2rem 0.8rem;
+    border-radius: 2rem;
+    font-weight: 700;
+    font-size: 0.9rem;
+    box-shadow: 0 2px 6px rgba(234,88,12,0.2);
+  }
+</style>
+{% endblock %}
 
 {% block content %}
+<div class="island-bg">
+  <!-- Облака -->
+  <div class="cloud cloud1"></div>
+  <div class="cloud cloud2"></div>
+  <div class="cloud cloud3"></div>
 
-<div class="text-center mb-8">
-  <h1 class="text-4xl font-black mb-1" style="color:#6c63ff;">Кто будет заниматься?</h1>
-  <p class="text-gray-400 font-semibold">Выбери своё имя 👇</p>
-</div>
-
-{% if children %}
-  <div class="flex flex-col gap-3 mb-6">
-    {% for child in children %}
-    <div class="card flex items-center gap-3 p-4 pop-in">
-
-      {# Аватар #}
-      <div class="flex-shrink-0 w-12 h-12 rounded-2xl flex items-center justify-center
-                  font-black text-2xl text-white"
-           style="background: linear-gradient(135deg, #6c63ff, #a78bfa);">
-        {{ child.name[0] | upper }}
-      </div>
-
-      {# Имя + уровни по предметам #}
-      <div class="flex-1 min-w-0">
-        <div class="font-bold text-lg text-gray-800 truncate">{{ child.name }}</div>
-        <div class="flex items-center gap-2 mt-1 flex-wrap">
-          {# Суммарные очки #}
-          <span class="badge badge-yellow">⭐ {{ child.points }}</span>
-
-          {# Мат уровень #}
-          {% set ml = child.get_level("математика") %}
-          <span class="badge badge-purple" style="font-size:10px;">🔢 Ур.{{ ml }}</span>
-
-          {# Рус уровень #}
-          {% set rl = child.get_level("русский") %}
-          <span class="badge" style="background:#fce7f3;color:#db2777;font-size:10px;">📝 Ур.{{ rl }}</span>
-
-          {# Стрик математики #}
-          {% set ms = child.get_streak("математика") %}
-          {% if ms > 0 %}
-          <span class="badge" style="background:#fef3c7;color:#d97706;font-size:10px;">🔥 {{ ms }}</span>
-          {% endif %}
-        </div>
-      </div>
-
-      {# Кнопки #}
-      <div class="flex items-center gap-2 flex-shrink-0">
-        <a href="/math/select?child_name={{ child.name }}"
-           class="flex items-center justify-center w-11 h-11 rounded-2xl font-bold text-lg
-                  text-white transition-all active:scale-90"
-           style="background:#6c63ff;" title="Заниматься">▶</a>
-        <a href="/rewards/{{ child.id }}"
-           class="flex items-center justify-center w-11 h-11 rounded-2xl border-2
-                  border-gray-200 bg-white text-xl transition-all hover:border-primary active:scale-90"
-           title="Награды">🎁</a>
-        <a href="/child/dashboard/{{ child.id }}"
-           class="flex items-center justify-center w-11 h-11 rounded-2xl border-2
-                  border-gray-200 bg-white text-xl transition-all hover:border-primary active:scale-90"
-           title="Статистика">📊</a>
-      </div>
-
+  <div class="max-w-md mx-auto px-4 pt-8 pb-16 relative z-10">
+    <!-- Заголовок -->
+    <div class="text-center mb-8">
+      <h1 class="text-5xl font-black mb-2" style="background: linear-gradient(135deg, #6c63ff, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+        🏝️ Остров героев
+      </h1>
+      <p class="text-gray-500 font-semibold text-lg">Выбери, кто продолжит приключение</p>
     </div>
-    {% endfor %}
-  </div>
 
-  <div class="flex items-center gap-3 my-6">
-    <hr class="flex-1 border-gray-200">
-    <span class="text-sm text-gray-400 font-semibold">или добавить нового</span>
-    <hr class="flex-1 border-gray-200">
-  </div>
-{% endif %}
+    {% if children %}
+      {% for child in children %}
+        {% set hero_colors = {
+          0: {'main': '#6c63ff', 'light': '#a78bfa'},
+          1: {'main': '#f59e0b', 'light': '#fbbf24'},
+          2: {'main': '#10b981', 'light': '#34d399'},
+          3: {'main': '#ef4444', 'light': '#f87171'},
+          4: {'main': '#8b5cf6', 'light': '#a78bfa'}
+        } %}
+        {% set color = hero_colors[loop.index0 % 5] %}
 
-<div class="card p-5">
-  <p class="text-center font-bold text-gray-500 mb-4">
-    {% if children %}Новый ребёнок{% else %}👋 Добро пожаловать! Добавь первого ученика{% endif %}
-  </p>
-  <form action="/child/create" method="post" class="flex flex-col gap-3">
-    <input type="text" name="name" placeholder="Имя ребёнка"
-           maxlength="20" required class="input-field">
-    <button type="submit" class="btn-primary">Добавить ➕</button>
-  </form>
+        <div class="hero-card pop-in" style="--hero-color: {{ color.main }}; --hero-color-light: {{ color.light }};">
+          <!-- Верхняя часть: аватар + имя + стрик -->
+          <div class="flex items-center gap-4 mb-4">
+            <div class="hero-avatar" style="background: linear-gradient(135deg, {{ color.main }}, {{ color.light }});">
+              {{ child.name[0] | upper }}
+            </div>
+            <div class="flex-1">
+              <div class="text-2xl font-extrabold text-gray-800">{{ child.name }}</div>
+              <div class="flex items-center gap-2 mt-1 flex-wrap">
+                <span class="badge badge-yellow">⭐ {{ child.points }}</span>
+                {% if child.get_streak("математика") > 0 %}
+                  <span class="streak-fire">🔥 {{ child.get_streak("математика") }} дн.</span>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
+          <!-- Уровни по предметам -->
+          <div class="flex gap-3 mb-4">
+            <div class="flex-1 bg-gray-50 rounded-2xl p-2 text-center">
+              <div class="text-xs text-gray-500">🔢 Математика</div>
+              <div class="font-bold text-lg text-purple-600">Ур. {{ child.get_level("математика") }}</div>
+            </div>
+            <div class="flex-1 bg-gray-50 rounded-2xl p-2 text-center">
+              <div class="text-xs text-gray-500">📝 Русский</div>
+              <div class="font-bold text-lg text-pink-600">Ур. {{ child.get_level("русский") }}</div>
+            </div>
+          </div>
+
+          <!-- Основная кнопка "Играть" -->
+          <div class="flex justify-center mb-3">
+            <a href="/math/select?child_name={{ child.name }}" class="btn-play">
+              ▶ В бой!
+            </a>
+          </div>
+
+          <!-- Иконки действий -->
+          <div class="action-icons flex justify-center gap-4">
+            <a href="/rewards/{{ child.id }}" title="Награды">🎁</a>
+            <a href="/child/dashboard/{{ child.id }}" title="Статистика">📊</a>
+          </div>
+        </div>
+      {% endfor %}
+
+      <!-- Разделитель перед добавлением -->
+      <div class="flex items-center gap-3 my-8">
+        <hr class="flex-1 border-gray-300">
+        <span class="text-gray-400 font-semibold text-sm">или</span>
+        <hr class="flex-1 border-gray-300">
+      </div>
+    {% endif %}
+
+    <!-- Блок добавления нового героя -->
+    <div class="bg-white/80 backdrop-blur-sm rounded-3xl p-5 shadow-lg border border-white">
+      <p class="text-center font-bold text-gray-500 mb-4">
+        {% if children %}
+          🧙 Присоединился новый искатель приключений?
+        {% else %}
+          🗺️ На острове пока никого нет. Создай первого героя!
+        {% endif %}
+      </p>
+      <form action="/child/create" method="post" class="flex flex-col gap-3">
+        <input type="text" name="name" placeholder="Имя героя"
+               maxlength="20" required class="input-field" autocomplete="off">
+        <button type="submit" class="btn-primary">✨ Создать героя</button>
+      </form>
+    </div>
+
+  </div>
 </div>
-
 {% endblock %}

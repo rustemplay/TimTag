@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import get_db
 from app.services.math.tasks import generate_math_task, explain_mistake, LEVEL_CONFIG
 from app.services.child_service import get_or_create_child, save_answer
+from datetime import datetime
 
 router = APIRouter(prefix="/math", tags=["math"])
 templates = Jinja2Templates(directory="app/templates")
@@ -27,6 +28,7 @@ async def select_topic(
     return templates.TemplateResponse(request, "math/select.html", {
         "child":      child,
         "level_info": level_info,
+         "now": datetime.now(),
     })
 
 
